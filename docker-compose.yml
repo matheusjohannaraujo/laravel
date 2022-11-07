@@ -1,0 +1,62 @@
+version: '3.3'
+services:
+  web:
+#    image: tomsik68/xampp:8
+    build: .
+    restart: always
+    links:
+      - mysql
+    ports:
+      - 80:80
+    volumes:
+      - ./www/app:/opt/lampp/htdocs/app
+      - ./www/bootstrap:/opt/lampp/htdocs/bootstrap
+      - ./www/config:/opt/lampp/htdocs/config
+      - ./www/database:/opt/lampp/htdocs/database
+      - ./www/lang:/opt/lampp/htdocs/lang
+      - ./www/public:/opt/lampp/htdocs/public
+      - ./www/resources:/opt/lampp/htdocs/resources
+      - ./www/routes:/opt/lampp/htdocs/routes
+      - ./www/storage:/opt/lampp/htdocs/storage
+      - ./www/tests:/opt/lampp/htdocs/tests
+      - ./www/composer.json:/opt/lampp/htdocs/composer.json
+      - ./www/vite.config.js:/opt/lampp/htdocs/vite.config.js
+#      - ./www:/opt/lampp/htdocs
+  mysql:
+    image: mysql:5.7
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=database_example
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5.2
+    restart: always
+    links:
+      - mysql
+    ports:
+      - 81:80
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql
+      - PMA_USER=root
+      - PMA_PASSWORD=password
+  adminer:
+    image: adminer:4.8.1
+    restart: always
+    links:
+      - mysql
+    ports:
+      - 82:8080
+    environment:
+      - ADMINER_DEFAULT_SERVER=mysql
+    volumes:
+      - /etc/localtime:/etc/localtime
+
+#networks:
+#  default:
+#    external: true
+#    name: default-network
